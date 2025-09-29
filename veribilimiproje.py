@@ -8,8 +8,21 @@ df = pd.read_csv("C:\\Users\\Acer\\Downloads\\merged_water_data.csv")
 df.head()
 
 #Önce sütunları kontrol edelim
-print(df.columns)
+#print(df.columns)
 
+threshold = 0.95
+missing_per_column = df.isnull().mean()
+cols_to_drop = missing_per_column[missing_per_column > threshold].index.tolist()
+df_cleaned = df.drop(columns=cols_to_drop)
+print(f"Tamamen ya da neredeyse tamamen boş sütunlar: {cols_to_drop}")
+
+missing_rows = df_cleaned[df_cleaned.isnull().any(axis=1)]
+print(f"Toplam eksik/hatalı değer içeren satır sayısı: {len(missing_rows)}")
+
+# Eksik veya hatalı değerleri doldurma (sayısal alanlar için ortalama)
+df_filled = df_cleaned.fillna(df_cleaned.mean(numeric_only=True))
+
+"""
 #Ülke Sayısı
 country_count = df['Country'].value_counts()
 print(country_count)
@@ -172,3 +185,4 @@ print(region_consumption)
 # Veri doğrulama: Su kullanım türlerinin toplamı %100 olmalı
 df['check'] = df['Agricultural Water Use (%)'] + df['Industrial Water Use (%)'] + df['Household Water Use (%)']
 print(df[['Country','Year','check']].head())
+"""
